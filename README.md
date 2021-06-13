@@ -1,19 +1,9 @@
-# compass-clock
+### 罗盘时钟
 
-## Project setup
-```
-npm install
-```
+* [在线预览](https://zhanghaibiao4913.github.io/compass-clock/#/)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+* 运行截图
 
-### Compiles and minifies for production
-```
-npm run build
-```
+![avatar](./screenshot/run.gif)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+

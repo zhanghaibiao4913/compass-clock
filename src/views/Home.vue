@@ -2,11 +2,11 @@
   <div class="home">
     <!-- 月 -->
     <div class="box-wrapper">
-      <div class="circle-box" :style="boxStyle('months')" ref="months">
+      <div class="circle-box" :style="boxStyle('months', monthsDeg)" ref="months">
         <span
           v-for="(item, index) in monthTexts"
           :key="item"
-          :class="{'active': index === currentMonth - 1}"
+          :class="{'active': index === currentMonths - 1}"
           :style="spanStyle(boxSize.months, monthTexts, index)"
         >{{ item }}</span>
         <i class="circle-dot"></i>
@@ -14,18 +14,18 @@
     </div>
     <!-- 日 -->
     <div class="box-wrapper">
-      <div class="circle-box" :style="boxStyle('days')" ref="days">
+      <div class="circle-box" :style="boxStyle('days', daysDeg)" ref="days">
         <span
           v-for="(item, index) in dayTexts"
           :key="item"
-          :class="{'active': index === currentDay - 1}"
+          :class="{'active': index === currentDays - 1}"
           :style="spanStyle(boxSize.days, dayTexts, index)"
         >{{ item }}</span>
       </div>
     </div>
     <!-- 小时 -->
     <div class="box-wrapper">
-      <div class="circle-box" :style="boxStyle('hours')" ref="hours">
+      <div class="circle-box" :style="boxStyle('hours', hoursDeg)" ref="hours">
         <span
           v-for="(item, index) in hourTexts"
           :key="item"
@@ -36,7 +36,7 @@
     </div>
     <!-- 分 -->
     <div class="box-wrapper">
-      <div class="circle-box" :style="boxStyle('minutes')" ref="minutes">
+      <div class="circle-box" :style="boxStyle('minutes', minutesDeg)" ref="minutes">
         <span
           v-for="(item, index) in minuteTexts"
           :key="item"
@@ -47,7 +47,7 @@
     </div>
     <!-- 秒 -->
     <div class="box-wrapper">
-      <div class="circle-box" :style="boxStyle('seconds')" ref="seconds">
+      <div class="circle-box" :style="boxStyle('seconds', secondsDeg)" ref="seconds">
         <span
           v-for="(item, index) in secondTexts"
           :key="item"
@@ -88,13 +88,13 @@ export default {
         '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'
       ],
       dayTexts: [
-        '一号', '二号', '三号', '四号', '五号', '六号', '七号', '八号', '九号', '十号',
-        '十一号', '十二号', '十三号', '十四号', '十五号', '十六号', '十七号', '十八号', '十九号', '二十号', 
-        '二十一号', '二十二号', '二十三号', '二十四号', '二十五号', '二十六号', '二十七号', '二十八号', '二十九号', '三十号', , '三十一号'
+        '一日', '二日', '三日', '四日', '五日', '六日', '七日', '八日', '九日', '十日',
+        '十一日', '十二日', '十三日', '十四日', '十五日', '十六日', '十七日', '十八日', '十九日', '二十日', 
+        '二十一日', '二十二日', '二十三日', '二十四日', '二十五日', '二十六日', '二十七日', '二十八日', '二十九日', '三十日', , '三十一日'
       ],
       hourTexts: [
-        '一点', '二点', '三点', '四点', '五点', '六点', '七点', '八点', '九点', '十点', '十一点', '十二点',
-        '十三点', '十四点', '十五点', '十六点', '十七点', '十八点', '十九点', '二十点', '二十一点', '二十二点', '二十三点', '二十四点'
+        '一时', '二时', '三时', '四时', '五时', '六时', '七时', '八时', '九时', '十时', '十一时', '十二时',
+        '十三时', '十四时', '十五时', '十六时', '十七时', '十八时', '十九时', '二十时', '二十一时', '二十二时', '二十三时', '二十四时'
       ],
       minuteTexts: [
         '零零', '一分', '二分', '三分', '四分', '五分', '六分', '七分', '八分', '九分', '十分',
@@ -113,24 +113,23 @@ export default {
         '五十一秒', '五十二秒', '五十三秒', '五十四秒', '五十五秒', '五十六秒', '五十七秒', '五十八秒', '五十九秒'
       ],
       boxSize: {
-        months: 100,
-        days: 200,
-        hours: 300,
-        minutes: 420,
-        seconds: 550
+        months: 80,
+        days: 180,
+        hours: 320,
+        minutes: 440,
+        seconds: 580
       },
       // 定义当前时间
-      currentMonth: 0, // 月
-      currentDay: 0, // 日
+      currentMonths: 0, // 月
+      currentDays: 0, // 日
       currentHours: 0, // 时
       currentMinutes: 0, // 分
       currentSeconds: 0, // 秒
-      // 定义当前各个旋转角度
-      monthDeg: 0,
-      dayDeg: 0,
-      hourDeg: 0,
-      minuteDeg: 0,
-      secondDeg: 0,
+      monthsDeg: 0,
+      daysDeg: 0,
+      hoursDeg: 0,
+      minutesDeg: 0,
+      secondsDeg: 0,
       // 定时器
       timer: null,
       isFullScreen: false,
@@ -139,14 +138,21 @@ export default {
   },
 
   created() {
-    const isSound = localStorage.getItem('is_sound')
-    this.isSound = JSON.parse(isSound) || false
+    const val = localStorage.getItem('is_sound')
+    this.isSound = JSON.parse(val) || false
   },
 
   mounted() {
-    this.$nextTick(() => {
-      this.init()
-    })
+    this.init()
+
+    // 解决浏览器切换回来后出现定时旋转错误情况
+    document.onvisibilitychange = () => {
+      // console.log(document.visibilityState)
+      clearInterval(this.timer)
+      if (document.visibilityState === 'visible') {
+        this.init()
+      }
+    }
   },
 
   methods: {
@@ -163,23 +169,18 @@ export default {
       // 删除多余的天数
       this.dayTexts = this.dayTexts.slice(0, monthDays)
       // 当前时间
-      this.currentMonth = month
-      this.currentDay = day
+      this.currentMonths = month
+      this.currentDays = day
       this.currentHours = hours
       this.currentMinutes = minutes
       this.currentSeconds = seconds
       // 角度
-      this.monthDeg = (this.currentMonth - 1) * this.getPerDeg(this.monthTexts)
-      this.dayDeg = (this.currentDay - 1) * this.getPerDeg(this.dayTexts)
-      this.hourDeg = (this.currentHours - 1) * this.getPerDeg(this.hourTexts)
-      this.minuteDeg = this.currentMinutes * this.getPerDeg(this.minuteTexts)
-      this.secondDeg = this.currentSeconds * this.getPerDeg(this.secondTexts)
-      // 旋转到当前位置
-      this.handleRotate('months', this.monthDeg)
-      this.handleRotate('days', this.dayDeg)
-      this.handleRotate('hours', this.hourDeg)
-      this.handleRotate('minutes', this.minuteDeg)
-      this.handleRotate('seconds', this.secondDeg)
+      this.monthsDeg = (this.currentMonths - 1) * this.getPerDeg(this.monthTexts)
+      this.daysDeg = (this.currentDays - 1) * this.getPerDeg(this.dayTexts)
+      this.hoursDeg = (this.currentHours - 1) * this.getPerDeg(this.hourTexts)
+      this.minutesDeg = this.currentMinutes * this.getPerDeg(this.minuteTexts)
+      this.secondsDeg = this.currentSeconds * this.getPerDeg(this.secondTexts)
+      
       // 设置定时器
       this.timer = setInterval(() => {
         this.runClock()
@@ -195,10 +196,11 @@ export default {
       return 360 / texts.length
     },
 
-    boxStyle(key) {
+    boxStyle(key, deg) {
       return {
         width: this.boxSize[key] + 'px',
-        height: this.boxSize[key] + 'px'
+        height: this.boxSize[key] + 'px',
+        transform: `rotate(-${deg}deg)`
       }
     },
 
@@ -226,13 +228,14 @@ export default {
       }
     },
 
-    handleRotate(refName, deg) {
-      if (this.isSound) {
-        this.$refs['audio'].play()
-      } else {
-        this.$refs['audio'].pause()
+    playMusic() {
+      if (this.$refs['audio']) {
+        if (this.isSound) {
+          this.$refs['audio'].play()
+        } else {
+          this.$refs['audio'].pause()
+        }
       }
-      this.$refs[refName].style.transform = `rotate(-${deg}deg)`
     },
 
     runClock() {
@@ -243,29 +246,25 @@ export default {
       const hours = d.getHours() // 时
       const minutes = d.getMinutes() // 分
       const seconds = d.getSeconds() // 秒
-      if (this.currentMonth !== month) {
-        this.currentMonth = month
-        this.monthDeg += this.getPerDeg(this.monthTexts)
-        this.handleRotate('months', this.monthDeg)
+      if (this.currentMonths !== month) {
+        this.currentMonths = month
+        this.monthsDeg += this.getPerDeg(this.monthTexts)
       }
-      if (this.currentDay !== day) {
-        this.currentDay = day
-        this.dayDeg += this.getPerDeg(this.dayTexts)
-        this.handleRotate('days', this.dayDeg)
+      if (this.currentDays !== day) {
+        this.currentDays = day
+        this.daysDeg += this.getPerDeg(this.dayTexts)
       }
       if (this.currentHours !== hours) {
         this.currentHours = hours
-        this.hourDeg += this.getPerDeg(this.hourTexts)
-        this.handleRotate('hours', this.hourDeg)
+        this.hoursDeg += this.getPerDeg(this.hourTexts)
       }
       if (this.currentMinutes !== minutes) {
         this.currentMinutes = minutes
-        this.minuteDeg += this.getPerDeg(this.minuteTexts)
-        this.handleRotate('minutes', this.minuteDeg)
+        this.minutesDeg += this.getPerDeg(this.minuteTexts)
       }
       this.currentSeconds = seconds
-      this.secondDeg += this.getPerDeg(this.secondTexts)
-      this.handleRotate('seconds', this.secondDeg)
+      this.secondsDeg += this.getPerDeg(this.secondTexts)
+      this.playMusic()
     },
 
     // 切换声音开关
@@ -291,11 +290,11 @@ export default {
 .home {
   height: 100%;
   width: 100%;
-  background-color: #232323;
+  background-color: #000000;
   color: #71767D;
   position: relative;
   min-width: 800px;
-  min-height: 600px;
+  min-height: 660px;
   padding: 20px 0;
   overflow: hidden;
 }
@@ -329,7 +328,7 @@ export default {
 .circle-box span {
   position: absolute;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 14px;
   // display: inline-block;
   // width: 50px;
   // height: 20px;
@@ -337,7 +336,7 @@ export default {
   // border: 1px solid #6eb0b2;
   box-sizing: border-box;
   &.active {
-    color: #6eb0b2;
+    color: #fff;
   }
 }
 
