@@ -57,7 +57,7 @@
       </div>
     </div>
     <!-- 转动音乐 -->
-    <!-- <audio ref="audio" :src="require('@/assets/music.mp3')"></audio> -->
+    <audio ref="audio" :src="require('@/assets/music.mp3')"></audio>
     <!-- 小按钮 -->
     <div class="action-btn-bar">
       <img
@@ -227,11 +227,11 @@ export default {
     },
 
     handleRotate(refName, deg) {
-      // if (this.isSound) {
-      //   this.$refs['audio'].play()
-      // } else {
-      //   this.$refs['audio'].pause()
-      // }
+      if (this.isSound) {
+        this.$refs['audio'].play()
+      } else {
+        this.$refs['audio'].pause()
+      }
       this.$refs[refName].style.transform = `rotate(-${deg}deg)`
     },
 
@@ -296,7 +296,7 @@ export default {
   position: relative;
   min-width: 800px;
   min-height: 600px;
-  padding: 40px 0;
+  padding: 20px 0;
   overflow: hidden;
 }
 
