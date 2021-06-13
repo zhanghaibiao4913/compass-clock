@@ -4,6 +4,6 @@
 
 * 运行截图
 
-![avatar](./screenshot/run.gif)
+![效果图](./screenshot/run.gif)
 
 
