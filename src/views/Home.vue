@@ -208,7 +208,7 @@ export default {
       const long = size / 2 // 半径
       const deg = this.getPerDeg(datas) // 元素之间的间隔度数
       const angle = i * deg // 角度
-      const { a, b } = this.hypotenuse(long, angle)
+      const { a, b } = this.getHypotenuse(long, angle)
       const rotateDeg = deg * i
       return {
         top: a + long + 'px',
@@ -218,8 +218,8 @@ export default {
       }
     },
 
-    // 已知角度和斜边，求直角边
-    hypotenuse(long, angle) {
+    // 已知角度和斜边，获取直角边
+    getHypotenuse(long, angle) {
       // 获得弧度
       let radian = 2 * Math.PI / 360 * angle
       return {
